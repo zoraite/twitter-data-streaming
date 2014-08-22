@@ -1,0 +1,4 @@
+keys.api.backup
+*.log
+*.gz
+*.key
