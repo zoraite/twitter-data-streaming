@@ -87,7 +87,7 @@ if __name__ == '__main__':
     ne_lat = float(coordinates[3])
 
     config = ConfigParser.RawConfigParser()
-    config.read('keys.api')
+    config.read('../keys.api')
 
     consumer_key = config.get(section, "consumer_key")
     consumer_secret = config.get(section, "consumer_secret")
