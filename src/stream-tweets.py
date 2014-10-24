@@ -7,6 +7,7 @@ import ConfigParser
 import gzip
 import sys
 import logging
+import os.path
 
 
 class StdOutListener(StreamListener):
@@ -22,6 +23,7 @@ class StdOutListener(StreamListener):
         self.current_file = None
         self.logger = logging.getLogger(__name__)
         self.init_logger(prefix)
+        self.suffix = 0
 
         self.logger.info(prefix)
 
@@ -41,12 +43,19 @@ class StdOutListener(StreamListener):
 
     def create_file(self):
         self.today = datetime.date.today()
+        # make sure the file doesn't not exist
+        # if it exists, increase the suffix
+        self.check_file_exists()
         file_name = self.format_file_name()
+
         self.current_file = gzip.open(file_name, "a")
         self.logger.info("Create File " + str(file_name))
 
     def write_data(self, data):
-        self.current_file.write(json.dumps(data) + "\n")
+        # store the data into a file
+        self.current_file.write(data + "\n")
+        # pass it to a pipe
+        print data
 
     def close_file(self):
         if self.current_file is not None:
@@ -56,11 +65,23 @@ class StdOutListener(StreamListener):
         today = datetime.date.today()
         return today == self.today
 
+    def check_file_exists(self):
+        while True:
+            file_name = self.format_file_name()
+            if os.path.isfile(file_name):
+                self.suffix += 1
+            else:
+                break
+
     def format_file_name(self):
+        suffix = ""
+        if self.suffix > 0:
+            suffix = "-" + str(self.suffix)
+
         return self.prefix + "-" \
                + str(self.today.year) \
                + str('%02d' % self.today.month) \
-               + str('%02d' % self.today.day) + ".json.gz"
+               + str('%02d' % self.today.day) + suffix + ".json.gz"
 
     def init_logger(self, prefix):
         # Logging set up
