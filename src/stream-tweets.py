@@ -55,7 +55,7 @@ class StdOutListener(StreamListener):
         # store the data into a file
         self.current_file.write(data + "\n")
         # pass it to a pipe
-        print data
+        # print data
 
     def close_file(self):
         if self.current_file is not None:
